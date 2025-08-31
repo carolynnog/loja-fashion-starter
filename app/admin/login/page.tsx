@@ -1,8 +1,10 @@
 // app/admin/login/page.tsx
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// força render dinâmico e desativa cache/prerender
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;      // tem que ser número ou false
+export const fetchCache = 'force-no-store';
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
