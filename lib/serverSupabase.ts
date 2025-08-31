@@ -1,9 +1,8 @@
+// lib/serverSupabase.ts
 import { createClient } from '@supabase/supabase-js';
 
 export function supabaseServer() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE!,
-    { auth: { persistSession: false } }
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!; // SERVER ONLY
+  return createClient(url, serviceRole, { auth: { persistSession: false } });
 }

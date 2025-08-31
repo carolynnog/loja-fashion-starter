@@ -7,7 +7,7 @@ export default function Header() {
   const { count } = useCart();
   const wppLink = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE}?text=${process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE}`;
   const insta = process.env.NEXT_PUBLIC_INSTAGRAM_URL!;
-  const name = process.env.NEXT_PUBLIC_STORE_NAME || 'Minha Loja';
+  const name = process.env.NEXT_PUBLIC_STORE_NAME || "Fashion's Nog";
 
   return (
     <header className="sticky top-0 z-40 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur">

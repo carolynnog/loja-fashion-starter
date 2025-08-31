@@ -4,13 +4,11 @@ import { useEffect, useState } from 'react';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
-
   const load = async () => {
     const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
     setOrders((data as any) || []);
   };
   useEffect(()=>{ load(); }, []);
-
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Pedidos</h1>
@@ -32,3 +30,4 @@ export default function AdminOrders() {
     </div>
   );
 }
+

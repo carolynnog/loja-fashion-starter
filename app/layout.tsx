@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { CartProvider } from "@/context/CartContext";
 
+
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_STORE_NAME || "Minha Loja",
   description: "Loja construída com Next.js + Supabase + Mercado Pago",
@@ -20,3 +21,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

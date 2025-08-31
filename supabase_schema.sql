@@ -1,43 +1,96 @@
--- Tabelas
-create table if not exists public.products (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  description text,
-  price_cents integer not null check (price_cents >= 0),
-  images text[] default '{}',
-  created_at timestamptz default now()
-);
-
-create table if not exists public.orders (
-  id uuid primary key default gen_random_uuid(),
-  buyer_email text,
-  total_cents integer not null,
-  status text not null default 'paid',
-  mp_payment_id text,
-  created_at timestamptz default now()
-);
-
--- Bucket de imagens
--- Crie manualmente no Supabase Storage: bucket "product-images" público
-
--- Segurança (RLS)
+-- =========================
+-- PRODUCTS
+-- =========================
 alter table public.products enable row level security;
+
+drop policy if exists "products read" on public.products;
+create policy "products read"
+on public.products
+for select
+using (true);
+
+drop policy if exists "products admin write" on public.products;
+create policy "products admin write"
+on public.products
+for all
+to authenticated
+using (auth.email() = 'fashionnogs@gmail.com')
+with check (auth.email() = 'fashionnogs@gmail.com');
+
+
+-- =========================
+-- CATEGORIES (remove this block if your table is named differently or doesn't exist)
+-- =========================
+alter table public.categories enable row level security;
+
+drop policy if exists "categories read" on public.categories;
+create policy "categories read"
+on public.categories
+for select
+using (true);
+
+drop policy if exists "categories admin write" on public.categories;
+create policy "categories admin write"
+on public.categories
+for all
+to authenticated
+using (auth.email() = 'fashionnogs@gmail.com')
+with check (auth.email() = 'fashionnogs@gmail.com');
+
+
+-- =========================
+-- ORDERS (usually not public; only admin can read/write)
+-- =========================
 alter table public.orders enable row level security;
 
--- Política: Products são públicos para leitura
-create policy if not exists "products read" on public.products
-for select using (true);
+drop policy if exists "orders admin read" on public.orders;
+create policy "orders admin read"
+on public.orders
+for select
+to authenticated
+using (auth.email() = 'fashionnogs@gmail.com');
 
--- Política: somente admin pode inserir/alterar/excluir
-create policy if not exists "products admin write" on public.products
+drop policy if exists "orders admin write" on public.orders;
+create policy "orders admin write"
+on public.orders
 for all
 to authenticated
-using (auth.email() = current_setting('app.admin_email', true))
-with check (auth.email() = current_setting('app.admin_email', true));
+using (auth.email() = 'fashionnogs@gmail.com')
+with check (auth.email() = 'fashionnogs@gmail.com');
 
--- Pedidos: somente admin lê/escreve
-create policy if not exists "orders admin all" on public.orders
+
+-- =========================
+-- STORAGE (bucket for product images)
+-- =========================
+-- Create bucket if it doesn't exist (public)
+do $$
+begin
+  if not exists (select 1 from storage.buckets where id = 'product-images') then
+    insert into storage.buckets (id, name, public)
+    values ('product-images', 'product-images', true);
+  end if;
+end
+$$;
+
+-- Policies for the 'product-images' bucket on storage.objects
+-- Public read:
+drop policy if exists "product-images read public" on storage.objects;
+create policy "product-images read public"
+on storage.objects
+for select
+using (bucket_id = 'product-images');
+
+-- Admin write (create/update/delete) only:
+drop policy if exists "product-images admin write" on storage.objects;
+create policy "product-images admin write"
+on storage.objects
 for all
 to authenticated
-using (auth.email() = current_setting('app.admin_email', true))
-with check (auth.email() = current_setting('app.admin_email', true));
+using (
+  bucket_id = 'product-images'
+  and auth.email() = 'fashionnogs@gmail.com'
+)
+with check (
+  bucket_id = 'product-images'
+  and auth.email() = 'fashionnogs@gmail.com'
+);

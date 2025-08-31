@@ -1,7 +1,7 @@
-'use client';
-import { createClient } from '@supabase/supabase-js';
+// lib/supabaseClient.ts
+"use client";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Este client grava/atualiza a sessão em COOKIE.
+// É isso que o middleware enxerga para liberar /admin.
+export const supabase = createClientComponentClient();

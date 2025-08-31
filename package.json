@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "2.45.3",
     "lucide-react": "0.454.0",
     "mercadopago": "1.5.14",
