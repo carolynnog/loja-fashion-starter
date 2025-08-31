@@ -1,16 +1,15 @@
 // app/admin/login/page.tsx
 "use client";
 
-// força render dinâmico e desativa cache/prerender
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;      // tem que ser número ou false
-export const fetchCache = 'force-no-store';
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginInner() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -33,21 +32,44 @@ export default function LoginPage() {
     <div className="container py-10 max-w-md">
       <h1 className="text-2xl font-semibold mb-4">Entrar</h1>
       <form onSubmit={onSubmit} className="space-y-3">
-        <input className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
-               type="email" placeholder="seu@email.com"
-               value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
-               type="password" placeholder="sua senha"
-               value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
+          type="email"
+          placeholder="seu@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
+          type="password"
+          placeholder="sua senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         {err && <p className="text-red-500 text-sm">{err}</p>}
-        <button type="submit" disabled={loading}
-                className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20"
+        >
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
     </div>
   );
 }
+
+export default function LoginPage() {
+  // Suspense evita o erro do useSearchParams no build
+  return (
+    <Suspense fallback={<div className="container py-10">Carregando…</div>}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
 
 
 
